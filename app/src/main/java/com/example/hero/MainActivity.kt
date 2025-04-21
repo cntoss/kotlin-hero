@@ -15,7 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.*
 import com.example.hero.ui.screens.HomeScreen
-import com.example.hero.ui.screens.ProfileScreen
+import com.example.hero.ui.screens.profile.ProfileScreen
+import com.example.hero.ui.screens.update_profile.UpdateProfileScreen
 import com.example.hero.ui.screens.users.UsersScreen
 import com.example.hero.ui.theme.HeroTheme
 
@@ -33,43 +34,48 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp() {
     val navController = rememberNavController()
-    val navItems = listOf("home","users", "profile")
+    val navItems = listOf("home", "users", "profile")
 
     HeroTheme {
-            Scaffold(
-                bottomBar = {
-                    NavigationBar {
-                        navItems.forEach { screen ->
-                            NavigationBarItem(
-                                icon = {
-                                    Icon(
-                                        imageVector = if (screen == "home") Icons.Default.Home
-                                        else if (screen == "users") Icons.Default.Person
-                                        else Icons.Default.AccountCircle,
-                                        contentDescription = screen
-                                    )
-                                },
-                                label = {
-                                    Text(screen.replaceFirstChar { it.uppercase() })
-                                },
-                                selected = navController.currentDestination?.route == screen,
-                                onClick = { navController.navigate(screen) }
-                            )
-                        }
+        Scaffold(
+            bottomBar = {
+                NavigationBar {
+                    navItems.forEach { screen ->
+                        NavigationBarItem(
+                            icon = {
+                                Icon(
+                                    imageVector = when (screen) {
+                                        "home" -> Icons.Default.Home
+                                        "users" -> Icons.Default.Person
+                                        else -> Icons.Default.AccountCircle
+                                    },
+                                    contentDescription = screen
+                                )
+                            },
+                            label = {
+                                Text(screen.replaceFirstChar { it.uppercase() })
+                            },
+                            selected = navController.currentDestination?.route == screen,
+                            onClick = { navController.navigate(screen) }
+                        )
                     }
                 }
-            ) { paddingValues ->
-                NavHost(
-                    navController = navController,
-                    startDestination = "home",
-                    modifier = Modifier.padding(paddingValues)
-                ) {
-                    composable("home") { HomeScreen() }
-                    composable("users") { UsersScreen() }
-                    composable("profile") { ProfileScreen() }
+            }
+        ) { paddingValues ->
+            NavHost(
+                navController = navController,
+                startDestination = "home",
+                modifier = Modifier.padding(paddingValues)
+            ) {
+                composable("home") { HomeScreen() }
+                composable("users") { UsersScreen() }
+                composable("profile") { ProfileScreen(navController) }
+                composable("updateProfile") {
+                    UpdateProfileScreen(navController)
                 }
             }
         }
+    }
 
 }
 
